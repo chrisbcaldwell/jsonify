@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -27,9 +29,9 @@ var goldenMap = []map[string]interface{}{
 	{"name": "Carla", "age": "7", "DOB": "03-05-2018", "tacos": "6", "burritos": "3"},
 }
 var goldenJson = []string{
-	"{{\"name\":\"Chris\",\"age\":\"47\",\"DOB\":\"04-09-1978\",\"tacos\":\"35\",\"burritos\":\"24\"}}",
-	"{{\"name\":\"Carl\",\"age\":\"23\",\"DOB\":\"12-12-2002\",\"tacos\":\"3\",\"burritos\":\"1\"}}",
-	"{{\"name\":\"Carla\",\"age\":\"7\",\"DOB\":\"03-05-2018\",\"tacos\":\"6\",\"burritos\":\"3\"}}",
+	"{\"name\":\"Chris\",\"age\":\"47\",\"DOB\":\"04-09-1978\",\"tacos\":\"35\",\"burritos\":\"24\"}",
+	"{\"name\":\"Carl\",\"age\":\"23\",\"DOB\":\"12-12-2002\",\"tacos\":\"3\",\"burritos\":\"1\"}",
+	"{\"name\":\"Carla\",\"age\":\"7\",\"DOB\":\"03-05-2018\",\"tacos\":\"6\",\"burritos\":\"3\"}",
 }
 
 func TestReadCsv(t *testing.T) {
@@ -68,15 +70,25 @@ func TestParseRecords(t *testing.T) {
 
 func TestBuild(t *testing.T) {
 	testJson, err := build(goldenMap)
-	if !reflect.DeepEqual(goldenJson, testJson) {
+	if err != nil {
+		t.Error("Error compiling map data into JSONL structure")
+	}
+	type jsonlMap []map[string]interface{}
+	var mapGolden jsonlMap
+	var mapTest jsonlMap
+	err = json.Unmarshal([]byte(strings.Join(goldenJson, ",\n")), &mapGolden)
+	if err != nil {
+		t.Error("Error unmarshalling expected JSON data")
+	}
+	err = json.Unmarshal([]byte(strings.Join(testJson, ",\n")), &mapTest)
+	if err != nil {
+		t.Error("Error unmarshalling result JSON data")
+	}
+	if !reflect.DeepEqual(mapGolden, mapTest) {
 		t.Logf("expected slice of JSON lines:\n%v", goldenJson)
 		t.Logf("result slice of JSON lines:\n%v", testJson)
-		t.Error("Result JSON lines slice does not match expected")
+		t.Error("Result JSON lines are not equivalent to expected")
 	}
-	if err != nil {
-		t.Error("Error compiling JSON lines")
-	}
-
 }
 
 func TestRun(t *testing.T) {

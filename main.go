@@ -113,13 +113,13 @@ func build(m []map[string]interface{}) ([]string, error) {
 }
 
 func getSavePath(inFile string) string {
-	// getSavePath creates a JSON file name and path for the inputted CSV path.
-	outFile := inFile + ".json"
+	// getSavePath creates a JSON lines file name and path for the inputted CSV path.
+	outFile := inFile + ".jsonl"
 	return outFile
 }
 
 func save(text []string, filePath string) error {
-	// save saves the row-wise JSON data as a valid JSON file.
+	// save saves the row-wise JSON data as a valid JSON lines file.
 	f, err := os.Create(filePath)
 	if err != nil {
 		fmt.Println("Error saving file")
