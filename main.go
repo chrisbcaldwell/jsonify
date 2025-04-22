@@ -85,7 +85,7 @@ func parseRecords(records [][]string, headers []string) ([]map[string]interface{
 		row := make(map[string]interface{})
 		for j := 0; j < len(headers); j++ {
 			if len(headers) != len(records[i]) {
-				message := "Record length does not match header length in all rows"
+				message := "record length does not match header length in all rows"
 				fmt.Println(message)
 				return nil, errors.New(message)
 			}
