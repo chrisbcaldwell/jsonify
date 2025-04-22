@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"os"
 	"reflect"
 	"testing"
@@ -9,8 +10,8 @@ import (
 // File constants
 const (
 	inputFile  = "./testdata/test1.csv"
-	resultFile = "test1.json"
-	goldenFile = "./testdata/test1.json"
+	resultFile = "./testdata/test1.csv.jsonl"
+	goldenFile = "./testdata/test1.jsonl"
 )
 
 // Intermediate data structure "constants"
@@ -76,4 +77,25 @@ func TestBuild(t *testing.T) {
 		t.Error("Error compiling JSON lines")
 	}
 
+}
+
+func TestRun(t *testing.T) {
+	err := run(inputFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	result, err := os.ReadFile(resultFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expected, err := os.ReadFile(goldenFile)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(expected, result) {
+		t.Logf("expected:\n%s", expected)
+		t.Logf("result:\n%s", result)
+		t.Error("Result file does not match expected")
+	}
+	os.Remove(resultFile)
 }
