@@ -44,7 +44,7 @@ func run(filePath string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("JSON file saved at " + savePath)
+	fmt.Println("JSON lines file saved at " + savePath)
 	return nil
 }
 
@@ -101,13 +101,13 @@ func build(m []map[string]interface{}) ([]string, error) {
 	// Each map in the slice is marshalled into a new JSON-formatted
 	// string in the return slice.
 	var result []string
-	for i := 0; i < len(m); i++ {
-		row, err := json.Marshal(m[i])
+	for _, row := range m {
+		r, err := json.Marshal(row)
 		if err != nil {
 			fmt.Println("Unable to format data as JSON")
 			return nil, err
 		}
-		result = append(result, string(row))
+		result = append(result, string(r))
 	}
 	return result, nil
 }
@@ -126,8 +126,11 @@ func save(text []string, filePath string) error {
 		return err
 	}
 	defer f.Close()
-	for _, row := range text {
-		fmt.Fprintln(f, row)
+	// All but last row get Fprintln to add \n to end of row
+	for i := 0; i < len(text)-1; i++ {
+		fmt.Fprintln(f, text[i])
 	}
+	// Last row gets Fprint to omit the new line at the end
+	fmt.Fprint(f, text[len(text)-1])
 	return nil
 }

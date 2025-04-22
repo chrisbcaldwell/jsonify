@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"os"
 	"reflect"
@@ -33,6 +32,11 @@ var goldenJson = []string{
 	"{\"name\":\"Carl\",\"age\":\"23\",\"DOB\":\"12-12-2002\",\"tacos\":\"3\",\"burritos\":\"1\"}",
 	"{\"name\":\"Carla\",\"age\":\"7\",\"DOB\":\"03-05-2018\",\"tacos\":\"6\",\"burritos\":\"3\"}",
 }
+
+type jsonlMap []map[string]interface{}
+
+var mapGolden jsonlMap
+var mapTest jsonlMap
 
 func TestReadCsv(t *testing.T) {
 	_, err := os.ReadFile(inputFile)
@@ -73,14 +77,13 @@ func TestBuild(t *testing.T) {
 	if err != nil {
 		t.Error("Error compiling map data into JSONL structure")
 	}
-	type jsonlMap []map[string]interface{}
-	var mapGolden jsonlMap
-	var mapTest jsonlMap
-	err = json.Unmarshal([]byte(strings.Join(goldenJson, ",\n")), &mapGolden)
+	goldenBytes := []byte("[" + strings.Join(goldenJson, ",\n") + "]")
+	testBytes := []byte("[" + strings.Join(testJson, ",\n") + "]")
+	err = json.Unmarshal(goldenBytes, &mapGolden)
 	if err != nil {
 		t.Error("Error unmarshalling expected JSON data")
 	}
-	err = json.Unmarshal([]byte(strings.Join(testJson, ",\n")), &mapTest)
+	err = json.Unmarshal(testBytes, &mapTest)
 	if err != nil {
 		t.Error("Error unmarshalling result JSON data")
 	}
@@ -104,10 +107,23 @@ func TestRun(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !bytes.Equal(expected, result) {
+	err = json.Unmarshal(jsonlToJson(result), &mapTest)
+	if err != nil {
+		t.Error("Error unmarshalling result file")
+	}
+	err = json.Unmarshal(jsonlToJson(expected), &mapGolden)
+	if err != nil {
+		t.Error("Error unmarshalling expected file")
+	}
+	if !reflect.DeepEqual(mapTest, mapGolden) {
 		t.Logf("expected:\n%s", expected)
 		t.Logf("result:\n%s", result)
 		t.Error("Result file does not match expected")
 	}
 	os.Remove(resultFile)
+}
+func jsonlToJson(jsonl []byte) []byte {
+	s := strings.Replace(string(jsonl), "\n", ",\n", -1)
+	s = "[" + s + "]"
+	return []byte(s)
 }
