@@ -45,5 +45,14 @@ In no particular order, future updates could include:
 * Retaining numeric data types.
 * Preservation of field order from the original .csv file.
 
-### Development Notes
+### References
+
+Andile, Maximilien n.d.  "How to read a file line by line with Go."  Accessed April 16, 2025.  https://www.practical-go-lessons.com/post/how-to-read-a-file-line-by-line-with-go-cbmaj47rttts70kq7c9g
+
+Gerardi, Ricardo 2021.  *Powerful Command-Line Applications in Go,* Chapter 3.  Pragmatic Bookshelf
+
+Ramanathan, Naveen 2023.  "Writing Files using Go."  *golangbot.com* (blog), August 13, 2023.  https://golangbot.com/write-files/
+
+SyntaxRules 2019.  "Reading CSV file in Go."  stackoverflow, November 13, 2019.  https://stackoverflow.com/a/58841827
+
 
