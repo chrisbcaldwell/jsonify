@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// Parse flags
-	filePath := flag.String("path", "", "Path of CSV file to convert to JSON")
+	filePath := flag.String("path", "", "Path of CSV file to convert to JSON lines")
 	flag.Parse()
 
 	// If no file specified, show usage
@@ -104,7 +104,7 @@ func build(m []map[string]interface{}) ([]string, error) {
 	for _, row := range m {
 		r, err := json.Marshal(row)
 		if err != nil {
-			fmt.Println("Unable to format data as JSON")
+			fmt.Println("Unable to format data as JSON lines")
 			return nil, err
 		}
 		result = append(result, string(r))
